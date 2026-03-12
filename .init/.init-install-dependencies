@@ -1,0 +1,4 @@
+{
+    "command": "cd db_visualizer && npm install",
+    "working_directory": "/home/kavia/workspace/code-generation/code-review-assistant-331717-331733/database_postgresql"
+}

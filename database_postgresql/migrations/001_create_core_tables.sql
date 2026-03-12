@@ -23,7 +23,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_lower_unique ON public.users (
 
 CREATE TABLE IF NOT EXISTS public.reviews (
   id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  -- user_id is nullable to support anonymous reviews.
+  -- For authenticated users, user_id references public.users(id).
+  user_id BIGINT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   language TEXT NOT NULL,
   code TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'completed',
@@ -32,7 +34,9 @@ CREATE TABLE IF NOT EXISTS public.reviews (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Common access patterns: by user, newest-first; and direct FK traversal.
+-- Common access patterns:
+-- - authenticated history: filter by user_id, newest-first
+-- - global history (including anonymous): newest-first
 CREATE INDEX IF NOT EXISTS idx_reviews_user_id_created_at ON public.reviews (user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON public.reviews (created_at DESC);
 
